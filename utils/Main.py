@@ -1,28 +1,20 @@
 # -*- coding: utf-8 -*-
 #import tensorflow as tf
 from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.keys import Keys
 import pandas as pd
 import time
 import numpy as np
 import time
-'''
-part1
-'''
+import datetime
 
-# search = open("C:/Users/W.K.SUNG/Desktop/Bin/naver2014_05_12.txt",'w')
-chrome_path = r"/data3/home/wonkyung.sung/Crome_driver/chromedriver"
+chrome_path = r"chrome_path"
 driver = webdriver.Chrome(chrome_path)
 df = pd.DataFrame()
+now = datetime.datetime.now()
+crawling_date = now.strftime('%Y-%m-%d')
+
 import urllib
 query = ["세탁기", "노트북", "건조기", "티비", "스마트폰", "모니터"]
-
-# query = ["삼성"]
-query_ = [urllib.parse.quote(i) for i in query]
-
 
 for query_first in query:
     print(query_first, " 시작")
@@ -96,21 +88,12 @@ for query_first in query:
                                                      "리뷰수":[review_number_of],
                                                      "raw":[raw]}), ignore_index=True)
 
-                # count_o += 1 
-                # print("   ", str(count_o))
-
-            except:
-                # count+= 1
-                # print(count)
-                pass
+            except:pass
         df = df.append(tmp_df, ignore_index=True)
-        
         df = df.drop_duplicates()
 
         next_page_sum = ""
         for next_page_tmp in driver.find_element_by_xpath("""//*[@id="__next"]/div/div[2]/div[2]/div[4]/div[1]/div[3]""").find_elements_by_tag_name("a"):
-            # //*[@id="__next"]/div/div[2]/div[2]/div[3]/div[1]/div[3] # 이거 
-            # //*[@id="__next"]/div/div[2]/div/div[3]/div[1]/div[3]
             if next_page_tmp.text == "다음":
                 next_page_sum = next_page_sum + "다음"
                 next_page_tmp.send_keys(Keys.ENTER)
@@ -122,4 +105,4 @@ for query_first in query:
         if "다음" not in next_page_sum:
             next_page_ = False
     df = df.drop_duplicates()
-    df.drop_duplicates().to_csv("제품명_1101_" + query_first +".csv", index=False)
+    df.drop_duplicates().to_csv("제품명_" + crawling_date + "_" + query_first +".csv", index=False)
