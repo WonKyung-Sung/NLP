@@ -132,7 +132,7 @@ class learning:
             )
         return data
         
-    def predict(self, data, batch=512):
+    def predict(self, data:(str, pd.Series), batch:int=512)->np.array:
         data = self._predict_preprocess(data)
         data = np.stack(data.input_, axis=0)
         
@@ -142,7 +142,7 @@ class learning:
 
         return self.model.predict(data)
 
-    def select_model(self, selected_model="TextCnn_char", scrach=True):
+    def select_model(self, selected_model:str="TextCnn_char", scrach:bool=True):
         '''
         [설명]
             선택된 모델을 로드
@@ -174,7 +174,7 @@ class learning:
                             dir_path='bert_ckpt',
                             num_class=2)
 
-    def fit(self, test_ratio = 0.1, batch_size = 512, EPOCHS = 1):
+    def fit(self, test_ratio:float=0.1, batch_size:int=512, EPOCHS:int=1):
         '''
         [설명]
             선택된 모델과 입력된 데이터를 기반으로 모델을 학습 
@@ -270,7 +270,7 @@ class learning:
         self.tokenizer = pickle.load(open(output_path +"class_info/"+"tokenizer.pickle", "rb"))
         self._version = pickle.load(open(output_path +"class_info/"+"version.pickle", "rb"))
         
-    def lime(self, text):
+    def lime(self, text:str):
         '''
         [설명]
             현재 학습된 모델을 기반으로 lime의 텍스트 분석을 실행
