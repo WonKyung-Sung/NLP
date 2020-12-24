@@ -5,9 +5,4 @@ lime
 re
 sklearn
 transformers
-
-
-
-
-
-cmake==3.10.3
+khaiii
