@@ -85,9 +85,9 @@
 
 ### 0. Sample 데이터 설명 
     1. Naver 영화 긍/부정 데이터 (./data/movie_data.csv)
-    2. 쇼핑몰 리뷰 데이터 (./data/Review.csv)
-    3. 크롤링 예시 (./data/Product_DB.csv)
-    4. 긍/부정 단어 데이터 (will be) 
+    #2. 쇼핑몰 리뷰 데이터 (./data/Review.csv) (will be) 
+    #3. 크롤링 예시 (./data/Product_DB.csv) (will be) 
+    #4. 긍/부정 단어 데이터 (will be) 
 
 ### 2. 전처리 모듈 생성
 
