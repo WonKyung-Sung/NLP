@@ -6,3 +6,4 @@ re
 sklearn
 transformers
 khaiii
+konlpy
