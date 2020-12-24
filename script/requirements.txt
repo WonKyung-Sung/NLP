@@ -1,1 +1,11 @@
- 
+numpy
+pandas
+tensorflow
+lime
+re
+sklearn
+
+
+
+
+cmake==3.10.3
