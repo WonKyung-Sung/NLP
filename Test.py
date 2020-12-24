@@ -22,7 +22,6 @@ main.fit(test_ratio=0.1, batch_size=512, EPOCHS=1)
 
 # 모델 예측
 main.predict(" 그 모델은 별로다")
-
 main.predict(["그 모델은 별로다"], ["어구어구 어구구"])
 
 # 모델 사후 분석
