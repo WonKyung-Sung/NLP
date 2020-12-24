@@ -15,13 +15,31 @@ import text_preprocess as wk
 
 class learning:
     def __init__(self):
-        self.data = False
+        self._data = False
         self.model = False
         self.voca_dic = False
         self.max_len_voca = False
-        self.max_len_char = False
+        self._max_len_char = False
         self.tokenizer = False
-        self.version = False
+        self._version = False
+        
+    @property
+    def data(self):
+        return self._data
+    @data.setter
+    def data(self, new_data):
+        if type(new_data) != pd.DataFrame:
+            raise ValueError("DataFrame 형식이 필요합니다.")
+        self._data = new_data
+        
+    @property
+    def max_len_char(self):
+        return self._max_len_char
+    @max_len_char.setter
+    def max_len_char(self, new_max_len_char):
+        if type(new_max_len_char) != int:
+            raise ValueError("int 형식이 필요합니다.")
+        self._max_len_char = new_max_len_char
         
     def preprocess(self, data, input_col="input", label_col="label", version="char3"):
         '''
@@ -62,10 +80,10 @@ class learning:
             raise Exception('label 컬럼이 존재하지 않습니다.') 
         if input_col not in data.keys():
             raise Exception('input 컬럼이 존재하지 않습니다.')
-        self.version = version
+        self._version = version
         self.tokenizer = eval("wk.sent2" + version)
         
-        if self.version not in ["bert"]:
+        if self._version not in ["bert"]:
             try: 
                 with open(parent_path + "/data/voca_dic_" + version + ".pickle", 'rb') as f:
                     self.voca_dic = pickle.load(f)
@@ -77,40 +95,40 @@ class learning:
                 self.voca_dic = wk.vocabulary_maker(data['preprocess'])
 
             self.max_len_voca = len(self.voca_dic)
-            if self.max_len_char == False:
-                self.max_len_char = max(data['preprocess'].map(len).max(), 6) +1
+            if self._max_len_char == False:
+                self._max_len_char = max(data['preprocess'].map(len).max(), 6) +1
                 
             data.loc[:, 'input_'] = data.preprocess.map(
                 lambda x: np.pad(
                     np.array([self.voca_dic.get(word, 1) for word in x]),
-                    (0,self.max_len_char-len(x)),
+                    (0,self._max_len_char-len(x)),
                     'constant', constant_values=(0,0))
             )
             data.input_ = data.input_.map(lambda x: x[:500])
         else: 
-            self.max_len_char = data[input_col].astype("str").map(len).max() +1 
+            self._max_len_char = data[input_col].astype("str").map(len).max() +1 
             data.loc[:, "input_"] = pd.Series(
-                self.tokenizer(data[input_col], MAX_LEN=self.max_len_char)
+                self.tokenizer(data[input_col], MAX_LEN=self._max_len_char)
             )
         if label_col != "label":
             data.loc[:, "label"] = data[input_col]
-        self.data =data
+        self._data =data
 
     def _predict_preprocess(self, data):
         if type(data) == str:
             data = pd.DataFrame({"input":[data]})
         else:
             data =pd.DataFrame({"input":data})
-        if self.version not in ["bert"]:
+        if self._version not in ["bert"]:
             data.loc[:, "preprocess"] = self.tokenizer(data["input"])
-            # self.max_len_char = max(data['preprocess'].map(len).max(), 6) +1
+            # self._max_len_char = max(data['preprocess'].map(len).max(), 6) +1
             data.loc[:, 'input_'] = data.preprocess.map(lambda x: np.pad( 
-               np.array([self.voca_dic.get(word, 1) for word in x]) ,(0,self.max_len_char-len(x)),
+               np.array([self.voca_dic.get(word, 1) for word in x]) ,(0,self._max_len_char-len(x)),
                'constant', constant_values=(0,0)))
         else: 
-            self.max_len_char = data["input"].astype("str").map(len).max()
+            self._max_len_char = data["input"].astype("str").map(len).max()
             data.loc[:, "input_"] = pd.Series(
-                self.tokenizer(data["input"], MAX_LEN=self.max_len_char)
+                self.tokenizer(data["input"], MAX_LEN=self._max_len_char)
             )
         return data
         
@@ -169,8 +187,8 @@ class learning:
         
         
         # 학습 나누기 
-        raw_y = self.data[["label"]].to_numpy()
-        raw_x = np.stack(self.data.input_, axis=0)
+        raw_y = self._data[["label"]].to_numpy()
+        raw_x = np.stack(self._data.input_, axis=0)
         x_train, x_test, y_train, y_test = train_test_split(raw_x, raw_y,  test_size = test_ratio,random_state=43)
         train_ds = tf.data.Dataset.from_tensor_slices(
             (x_train, y_train)).shuffle(x_train.shape[0] +1).batch(batch_size)        
@@ -236,9 +254,9 @@ class learning:
             
         pickle.dump(self.voca_dic, open(output_path +"class_info/"+"voca_dic.pickle", "wb"))
         pickle.dump(self.max_len_voca, open(output_path +"class_info/"+"max_len_voca.pickle", "wb"))
-        pickle.dump(self.max_len_char, open(output_path +"class_info/"+"max_len_char.pickle", "wb"))
+        pickle.dump(self._max_len_char, open(output_path +"class_info/"+"max_len_char.pickle", "wb"))
         pickle.dump(self.tokenizer, open(output_path +"class_info/"+"tokenizer.pickle", "wb"))
-        pickle.dump(self.version, open(output_path +"class_info/"+"version.pickle", "wb"))
+        pickle.dump(self._version, open(output_path +"class_info/"+"version.pickle", "wb"))
         
     def load(self, output_path):
         '''
@@ -248,9 +266,9 @@ class learning:
         self.model = tf.keras.models.load_model(output_path + "model/model.h5")
         self.voca_dic = pickle.load(open(output_path +"class_info/"+"voca_dic.pickle", "rb"))
         self.max_len_voca = pickle.load(open(output_path +"class_info/"+"max_len_voca.pickle", "rb"))
-        self.max_len_char = pickle.load(open(output_path +"class_info/"+"max_len_char.pickle", "rb"))
+        self._max_len_char = pickle.load(open(output_path +"class_info/"+"max_len_char.pickle", "rb"))
         self.tokenizer = pickle.load(open(output_path +"class_info/"+"tokenizer.pickle", "rb"))
-        self.version = pickle.load(open(output_path +"class_info/"+"version.pickle", "rb"))
+        self._version = pickle.load(open(output_path +"class_info/"+"version.pickle", "rb"))
         
     def lime(self, text):
         '''
