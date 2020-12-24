@@ -26,14 +26,13 @@ main.predict(" 그 모델은 별로다")
 main.predict(["그 모델은 별로다"], ["어구어구 어구구"])
 
 # 모델 사후 분석
-
- # 라임 분석
- main.lime(" 그 모델은 별로다")
+# 라임 분석
+main.lime(" 그 모델은 별로다")
  
- # binary classification 분석
- import Post_analysis as pa
- pred = main.predict(data["document"])
- pa.report(pred=pred,labels= data["label"])
+# binary classification 분석
+import Post_analysis as pa
+pred = main.predict(data["document"])
+pa.report(pred=pred,labels= data["label"])
 
 
 # 모델 저장
