@@ -34,7 +34,6 @@ import Post_analysis as pa
 pred = main.predict(data["document"])
 pa.report(pred=pred,labels= data["label"])
 
-
 # 모델 저장
 main.save("./save_model")
 
