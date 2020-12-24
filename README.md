@@ -1,17 +1,82 @@
+### 깃 목표: 
+
+    1. 모든 NLP 관련 Task를 pipline처럼 통일 시켜 활용이 쉽도록 한다.
+    2. 누구나 준수한 성능의 모델 생성이 가능하도록 한다.    
+
+
+#### 활용 예시 (Bert Classification)
+
+    import sys
+    import numpy as np
+    import pandas as pd
+    sys.path.append("./utils/")
+    import Main as mm
+    import Post_analysis as pa
+    
+    # 데이터 로드
+    data = pd.read_csv("./data/movie_data.csv")
+    
+    # 모델 인스턴스 생성
+    main = mm.learning()
+    
+    # 데이터 전처리
+    main.preprocess(data, input_col='document',version="bert")
+    
+    # bert 모델 로드
+    main.select_model(selected_model="Bert_classification")
+    
+    # 모델 학습
+    main.fit(test_ratio=0.1, batch_size=512, EPOCHS=1)
+    
+    # 모델 예측
+    main.predict(" 그 모델은 별로다")
+    
+    main.predict(["그 모델은 별로다"], ["어구어구 어구구"])
+    
+    # 모델 사후 분석
+    
+     # 라임 분석
+     main.lime(" 그 모델은 별로다")
+     
+     # binary classification 분석
+     import Post_analysis as pa
+     pred = main.predict(data["document"])
+     pa.report(pred=pred,labels= data["label"])
+    
+    
+    # 모델 저장
+    main.save("./save_model")
+
+    # 모델 로드
+    main.load("./save_model")
+
 ## git 구성 
 
-    1. Sample Data 구성
+    0. Sample Data 구성
+        1.1 데이터 종류 및 위치 설명
+        
+    1. 리뷰 분석 (구현 예정)
+        1.1 현 데이터 셋 EDA
     
-    2. 전처리 모듈 생성
+    2. 전처리 (형태소 분석기) 모듈 생성
+    
         2.1 음절
         2.2 자소
         2.3 자소 (초, 중, 종 맞추어)
         2.4 n-gram Tokenizer
+        2.5 OKT Tokenizer
+        2.6 Khaiii
+        2.7 Bert Tokenizer
     
     3. Pipline을 활용한 모델 학습, 예측, 저장, and 로드 
         3.1 학습
         3.2 예측
         3.3 저장, 로드
+        
+        3.4 내장된 모델 종류 
+            3.4.1. Charater CNN Classification 설명
+            3.4.2. Text CNN Classification 설명
+            3.4.3. bert classification 설명
         
     4. 사후분석 pipline 추가
         4.1 Lime 텍스트 분석 
@@ -19,7 +84,7 @@
         4.3 일반적인 binary classification report
         
 
-### 1. Sample 데이터 설명 
+### 0. Sample 데이터 설명 
     1. Naver 영화 긍/부정 데이터 (./data/movie_data.csv)
     2. 쇼핑몰 리뷰 데이터 (./data/Review.csv)
     3. 크롤링 예시 (./data/Product_DB.csv)
